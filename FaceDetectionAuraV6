@@ -1,0 +1,57 @@
+import gab.opencv.*;
+import java.awt.Rectangle;
+import processing.video.*;
+
+Capture video;
+OpenCV opencv;
+Rectangle[] faces;
+
+int num = 50;
+
+int[] savX = new int[num];
+int[] savY = new int[num];
+
+void setup() {
+  size(640, 480);
+
+  video = new Capture(this, width, height);
+  opencv = new OpenCV(this, width, height);
+
+  video.start();
+  opencv.loadCascade(OpenCV.CASCADE_FRONTALFACE);
+}
+
+void draw() {
+
+  opencv.loadImage(video);
+  image(video, 0, 0);
+  faces = opencv.detect();
+  noFill();
+  stroke(0, 255, 0);
+  strokeWeight(3);
+
+  ///load pixels - pws vrisko thn periohh
+
+  for (int i = 0; i < faces.length; i++) {
+    rect(faces[i].x, faces[i].y, faces[i].width, faces[i].height);
+    ellipse((faces[i].x+faces[i].width/2), (faces[i].y+faces[i].height/2), 10, 10);
+  }
+
+  for (int i = num-1; i > 0; i--) {
+    savX[i] = savX[i-1];
+    savY[i] = savY[i-1];
+  }
+  
+  savX[0] = mouseX;
+  savY[0] = mouseY;
+  
+  for (int i = 0; i < num; i++){
+  
+  ellipse(savX[i],savY[i], i/2.0,i/2.0);
+    
+  }
+  
+}
+void captureEvent(Capture video) {
+  video.read();
+}
